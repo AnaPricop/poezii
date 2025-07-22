@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Poem;
 use Illuminate\Http\Request;
 
 class LikeController extends Controller
@@ -13,6 +14,7 @@ class LikeController extends Controller
         if ($like) {
             $like->delete();
         } else {
+
             $poem->likes()->create(['user_id' => auth()->id()]);
         }
 

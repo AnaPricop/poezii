@@ -1,22 +1,46 @@
 import React from 'react';
+import { Link, usePage } from '@inertiajs/react';
 
 export default function Poem({ poem }) {
+    const { auth } = usePage().props;
+
     return (
-        <div className="p-6 flex space-x-2">
-            {/* Aici poți adăuga un avatar pentru user mai târziu */}
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600 -scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-            <div className="flex-1">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <span className="text-gray-800">{poem.user.name}</span>
-                        <small className="ml-2 text-sm text-gray-600">{new Date(poem.created_at).toLocaleString()}</small>
+        <div className="p-6">
+            <div className="flex space-x-2">
+                <div className="flex-1">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <span className="text-gray-800">{poem.user?.name}</span>
+                            <small className="ml-2 text-sm text-gray-600">{new Date(poem.created_at).toLocaleString()}</small>
+                        </div>
                     </div>
-                    {/* Aici poți adăuga un meniu dropdown pentru Edit/Delete mai târziu */}
+                    <p className="mt-4 text-lg font-semibold text-gray-900">{poem.title}</p>
+                    <p className="mt-2 text-md text-gray-700 whitespace-pre-wrap">{poem.content}</p>
                 </div>
-                <p className="mt-4 text-lg text-gray-900">{poem.title}</p>
-                <p className="mt-2 text-md text-gray-700 whitespace-pre-wrap">{poem.content}</p>
+            </div>
+
+            <div className="mt-4 flex justify-between items-center text-sm text-gray-600">
+                <span>{poem.likes_count} aprecieri</span>
+
+                {auth.user && (
+                    <Link
+                        href={route('poems.like', poem.id)}
+                        method="post"
+                        as="button"
+                        preserveScroll
+                        preserveState
+                        className={`p-2 rounded-full flex items-center space-x-1 transition-colors duration-200 ${
+                            poem.user_has_liked
+                                ? 'text-red-500 bg-red-100 hover:bg-red-200'
+                                : 'text-gray-500 bg-gray-100 hover:bg-gray-200'
+                        }`}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                        </svg>
+                        <span>{poem.user_has_liked ? 'Apreciat' : 'Apreciază'}</span>
+                    </Link>
+                )}
             </div>
         </div>
     );

@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Auth;
 
 class PoemController extends Controller
 {
@@ -15,11 +16,18 @@ class PoemController extends Controller
      */
     public function index()
     {
+        $poems = Poem::with('user:id,name')->withCount('likes')->latest()->paginate(15);
+
+        if (Auth::check()) {
+            $likedPoemIds = Auth::user()->likes()->pluck('poem_id')->toArray();
+
+            $poems->each(function ($poem) use ($likedPoemIds) {
+                $poem->user_has_liked = in_array($poem->id, $likedPoemIds);
+            });
+        }
+
         return Inertia::render('Poems/Index', [
-            // AICI ESTE CHEIA: încarcă TOATE poeziile, cu autor și paginare
-            'poems' => \App\Models\Poem::with('user:id,name')
-                ->latest()
-                ->paginate(15) // Afișăm 15 pe pagină
+            'poems' => $poems,
         ]);
     }
 
@@ -28,7 +36,6 @@ class PoemController extends Controller
      */
     public function show(Poem $poem): Response
     {
-        // Încărcăm numărul de vizualizări sau alte detalii dacă e nevoie
         return Inertia::render('Poems/Show', [
             'poem' => $poem->load('user:id,name')
         ]);
@@ -39,7 +46,6 @@ class PoemController extends Controller
      */
     public function create(): Response
     {
-        // return response('Test from PoemController create method');
         return Inertia::render('Poems/Create');
     }
 

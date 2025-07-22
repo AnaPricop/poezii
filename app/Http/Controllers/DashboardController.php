@@ -5,22 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\Poem;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Route; // Adaugă acest import sus
+use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth; // <-- Adaugă acest import
+
 class DashboardController extends Controller
 {
     public function index()
     {
-        $poems = Poem::with('user')->withCount('likes');
+        $poemsQuery = Poem::with('user:id,name')->withCount('likes');
 
-        $mostLikedPoems = (clone $poems)->orderByDesc('likes_count')->limit(5)->get();
+        $mostLikedPoems = (clone $poemsQuery)->orderByDesc('likes_count')->limit(5)->get();
+        $latestPoems = (clone $poemsQuery)->latest()->limit(5)->get();
 
-        $latestPoems = (clone $poems)->latest()->limit(5)->get();
+        if (Auth::check()) {
+            // Preluăm ID-urile poeziilor la care userul curent a dat like
+            $likedPoemIds = Auth::user()->likes()->pluck('poem_id')->toArray();
+
+            $allPoemsOnPage = $mostLikedPoems->merge($latestPoems)->unique('id');
+
+            $allPoemsOnPage->each(function ($poem) use ($likedPoemIds) {
+                $poem->user_has_liked = in_array($poem->id, $likedPoemIds);
+            });
+        }
 
         return Inertia::render('Dashboard', [
             'mostLikedPoems' => $mostLikedPoems,
             'latestPoems' => $latestPoems,
-            // Adaugă aceste linii, la fel ca în pagina Welcome standard
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
             'laravelVersion' => Application::VERSION,
