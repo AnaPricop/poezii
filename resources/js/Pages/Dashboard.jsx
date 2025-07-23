@@ -2,6 +2,7 @@ import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import GuestLayout from '@/Layouts/GuestLayout';
 import Poem from '@/Components/Poem';
+import ShortPoem from '@/Components/ShortPoem';
 import { Head, usePage } from '@inertiajs/react';
 
 export default function Dashboard({ mostLikedPoems, latestPoems }) {
@@ -13,7 +14,7 @@ export default function Dashboard({ mostLikedPoems, latestPoems }) {
             {poems.length > 0 ? (
                 <div className="bg-white shadow-sm rounded-lg divide-y">
                     {poems.map(poem => (
-                        <Poem key={poem.id} poem={poem} />
+                        <ShortPoem key={poem.id} poem={poem} />
                     ))}
                 </div>
             ) : (
@@ -26,7 +27,7 @@ export default function Dashboard({ mostLikedPoems, latestPoems }) {
         <>
             <Head title="Bun Venit" />
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 grid grid-cols-2 gap-4 ">
                     <PoemSection title="Cele mai apreciate creații" poems={mostLikedPoems} />
                     <PoemSection title="Adăugate recent" poems={latestPoems} />
                 </div>

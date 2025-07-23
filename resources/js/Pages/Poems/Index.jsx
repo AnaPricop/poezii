@@ -14,7 +14,7 @@ export default function Index({ auth, poems }) {
                         <Poem key={poem.id} poem={poem} />
                     )}
                 </div>
-                {/* Aici poți adăuga link-uri de paginare mai târziu */}
+
             </div>
         </AuthenticatedLayout>
     );
