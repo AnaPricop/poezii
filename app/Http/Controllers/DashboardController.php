@@ -13,7 +13,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $poemsQuery = Poem::with('user:id,name')->withCount('likes');
+        $poemsQuery = Poem::with('user:id,name')->withCount('likes', 'comments');
 
         $mostLikedPoems = (clone $poemsQuery)->orderByDesc('likes_count')->limit(5)->get();
         $latestPoems = (clone $poemsQuery)->latest()->limit(5)->get();

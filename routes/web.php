@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\UserPoemsController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CommentController;
 
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -23,6 +24,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/poems/{poem}/like', [LikeController::class, 'toggle'])->name('poems.like');
+    Route::post('/poems/{poem}/comments', [CommentController::class, 'store'])->name('poems.comments.store');
+
 
     Route::resource('poems', PoemController::class)->except(['index', 'show']);
 

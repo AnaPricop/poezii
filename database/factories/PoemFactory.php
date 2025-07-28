@@ -3,7 +3,8 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-
+use App\Models\Comment;
+use App\Models\User;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Poem>
  */
@@ -24,7 +25,29 @@ class PoemFactory extends Factory
             'content' => implode("\n\n", fake()->paragraphs(rand(3, 10))), // Paragrafe separate de o linie goală
             'views' => fake()->numberBetween(0, 25000),
             'created_at' => fake()->dateTimeBetween('-3 years', 'now'),
-            'updated_at' => fn (array $attributes) => fake()->dateTimeBetween($attributes['created_at'], 'now'),
+            'updated_at' => fn(array $attributes) => fake()->dateTimeBetween($attributes['created_at'], 'now'),
         ];
     }
+
+    /**
+     * Configure the model factory.
+     *
+     * @return $this
+     */
+    public function configure()
+    {
+        return $this->afterCreating(function (\App\Models\Poem $poem) {
+            $users = User::all();
+
+            if ($users->isEmpty()) {
+                return;
+            }
+
+            Comment::factory(rand(0, 7))->create([
+                'poem_id' => $poem->id,
+                'user_id' => fn() => $users->random()->id,
+            ]);
+        });
+    }
+
 }

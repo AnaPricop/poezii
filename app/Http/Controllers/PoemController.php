@@ -36,8 +36,17 @@ class PoemController extends Controller
      */
     public function show(Poem $poem): Response
     {
+//        return Inertia::render('Poems/Show', [
+//            'poem' => $poem->load('user:id,name')
+//        ]);
+        $poem->loadCount('likes');
+        $poem->load('user:id,name');
+
+        $comments = $poem->comments()->with('user:id,name')->latest()->get();
+
         return Inertia::render('Poems/Show', [
-            'poem' => $poem->load('user:id,name')
+            'poem' => $poem,
+            'comments' => $comments,
         ]);
     }
 
