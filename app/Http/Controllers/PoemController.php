@@ -39,9 +39,13 @@ class PoemController extends Controller
 //        return Inertia::render('Poems/Show', [
 //            'poem' => $poem->load('user:id,name')
 //        ]);
-        $poem->loadCount('likes');
+        $poem->loadCount('likes', 'comments');
         $poem->load('user:id,name');
+        $poem->user_has_liked = false;
+        if (Auth::check()) {
 
+            $poem->user_has_liked = $poem->likes()->where('user_id', Auth::id())->exists();
+        }
         $comments = $poem->comments()->with('user:id,name')->latest()->get();
 
         return Inertia::render('Poems/Show', [

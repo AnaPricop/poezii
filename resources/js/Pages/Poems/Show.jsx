@@ -2,61 +2,78 @@ import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import GuestLayout from '@/Layouts/GuestLayout';
 import Poem from '@/Components/Poem';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import {Head, useForm, usePage} from '@inertiajs/react';
 import PrimaryButton from '@/Components/PrimaryButton';
+import InputError from '@/Components/InputError';
 
-export default function Show({ poem, comments }) {
-    const { auth } = usePage().props;
+const Comment = ({comment}) => (
+    <div className="p-6 flex space-x-4">
+        {/* Aici poți adăuga un avatar simplu */}
+        <div
+            className="flex-shrink-0 w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-text-muted font-semibold">
+            {comment.user.name.charAt(0)}
+        </div>
+        <div className="flex-1">
+            <div className="flex justify-between items-center">
+                <div>
+                    <span className="font-semibold text-text-main">{comment.user.name}</span>
+                    <small
+                        className="ml-2 text-sm text-text-muted">{new Date(comment.created_at).toLocaleDateString()}</small>
+                </div>
+            </div>
+            <p className="mt-2 text-text-main whitespace-pre-wrap">{comment.body}</p>
+        </div>
+    </div>
+);
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+export default function Show({poem, comments = []}) {
+    const {auth} = usePage().props;
+
+    const {data, setData, post, processing, errors, reset} = useForm({
         body: '',
     });
 
     const submit = (e) => {
         e.preventDefault();
         post(route('poems.comments.store', poem.id), {
+            preserveScroll: true,
             onSuccess: () => reset(),
         });
     };
 
     const pageContent = (
         <>
-            <Head title={poem.title} />
-            <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
-                {/* Afișăm poezia principală */}
-                <div className="bg-white shadow-sm rounded-lg">
-                    <Poem poem={poem} />
+            <Head title={poem.title}/>
+            <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                <div className="bg-surface shadow-sm rounded-lg border border-slate-200">
+                    <Poem poem={poem}/>
                 </div>
 
                 {auth.user && (
-                    <form onSubmit={submit} className="mt-6">
-                        <textarea
-                            value={data.body}
-                            onChange={(e) => setData('body', e.target.value)}
-                            placeholder="Adaugă un comentariu..."
-                            className="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
-                        ></textarea>
-                        <PrimaryButton className="mt-2" disabled={processing}>
-                            Postează comentariul
+                    <form onSubmit={submit}
+                          className="mt-8 bg-surface p-6 rounded-lg shadow-sm border border-slate-200">
+        <textarea
+            value={data.body}
+            onChange={(e) => setData('body', e.target.value)}
+            placeholder={`Ce părere ai, ${auth.user.name}?`}
+            className="w-full border-slate-300 focus:border-teal-500 focus:ring focus:ring-teal-500/50 rounded-md shadow-sm text-text-main bg-slate-50" // <-- LINIA MODIFICATĂ
+        ></textarea>
+                        <InputError message={errors.body} className="mt-2"/>
+                        <PrimaryButton className="mt-4" disabled={processing}>
+                            Postează
                         </PrimaryButton>
                     </form>
                 )}
 
-                <div className="mt-6 bg-white shadow-sm rounded-lg divide-y">
-                    <h3 className="text-lg font-bold p-6">Comentarii</h3>
-                    {comments.map(comment => (
-                        <div key={comment.id} className="p-6 flex space-x-3">
-                            <div className="flex-1">
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <span className="text-gray-800 font-semibold">{comment.user.name}</span>
-                                        <small className="ml-2 text-sm text-gray-600">{new Date(comment.created_at).toLocaleString()}</small>
-                                    </div>
-                                </div>
-                                <p className="mt-2 text-gray-700">{comment.body}</p>
-                            </div>
-                        </div>
-                    ))}
+                <div className="mt-8 bg-surface rounded-lg shadow-sm border border-slate-200 divide-y divide-slate-100">
+                    <h3 className="text-xl font-bold p-6 text-text-main">
+                        {comments.length} {comments.length === 1 ? 'Comentariu' : 'Comentarii'}
+                    </h3>
+                    {comments.length > 0 ? (
+                        comments.map(comment => <Comment key={comment.id} comment={comment}/>)
+                    ) : (
+                        <p className="p-6 text-text-muted">Fii primul care lasă un comentariu.</p>
+                    )}
                 </div>
             </div>
         </>
