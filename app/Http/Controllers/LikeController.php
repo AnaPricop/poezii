@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Poem;
 use Illuminate\Http\Request;
+use App\Notifications\NewLikeOnPoem;
 
 class LikeController extends Controller
 {
@@ -16,6 +17,9 @@ class LikeController extends Controller
         } else {
 
             $poem->likes()->create(['user_id' => auth()->id()]);
+            if ($poem->user_id !== auth()->id()) {
+                $poem->user->notify(new NewLikeOnPoem(auth()->user(), $poem));
+            }
         }
 
         return back();

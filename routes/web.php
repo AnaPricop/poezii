@@ -7,7 +7,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\UserPoemsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CommentController;
-
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -16,8 +16,8 @@ Route::get('/poezii', [PoemController::class, 'index'])->name('poems.index');
 Route::get('/poezii/{poem}', [PoemController::class, 'show'])->name('poems.show');
 
 
-Route::middleware(['auth', 'verified'])->group(function () {
-
+//Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/creatiile-mele', [UserPoemsController::class, 'index'])->name('my-poems.index');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -28,7 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     Route::resource('poems', PoemController::class)->except(['index', 'show']);
-
+    Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 });
 
 require __DIR__ . '/auth.php';

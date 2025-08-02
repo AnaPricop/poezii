@@ -4,13 +4,16 @@ import { createContext, useContext, useState } from 'react';
 
 const DropDownContext = createContext();
 
-const Dropdown = ({ children }) => {
+const Dropdown = ({ children, onToggle = () => {}  }) => {
     const [open, setOpen] = useState(false);
 
     const toggleOpen = () => {
-        setOpen((previousState) => !previousState);
+        setOpen((previousState) => {
+            const newState = !previousState;
+            onToggle(newState);
+            return newState;
+        });
     };
-
     return (
         <DropDownContext.Provider value={{ open, setOpen, toggleOpen }}>
             <div className="relative">{children}</div>
@@ -35,27 +38,17 @@ const Trigger = ({ children }) => {
     );
 };
 
-const Content = ({
-    align = 'right',
-    width = '48',
-    contentClasses = 'py-1 bg-white',
-    children,
-}) => {
+const Content = ({ align = 'right', width = 'w-48', contentClasses = 'py-1 bg-surface', children }) => {
     const { open, setOpen } = useContext(DropDownContext);
 
     let alignmentClasses = 'origin-top';
 
     if (align === 'left') {
-        alignmentClasses = 'ltr:origin-top-left rtl:origin-top-right start-0';
+        alignmentClasses = 'origin-top-left start-0';
     } else if (align === 'right') {
-        alignmentClasses = 'ltr:origin-top-right rtl:origin-top-left end-0';
+        alignmentClasses = 'origin-top-right end-0';
     }
 
-    let widthClasses = '';
-
-    if (width === '48') {
-        widthClasses = 'w-48';
-    }
 
     return (
         <>
@@ -69,15 +62,10 @@ const Content = ({
                 leaveTo="opacity-0 scale-95"
             >
                 <div
-                    className={`absolute z-50 mt-2 rounded-md shadow-lg ${alignmentClasses} ${widthClasses}`}
+                    className={`absolute z-50 mt-2 rounded-md shadow-lg ${alignmentClasses} ${width}`} // <-- Am înlocuit `widthClasses` cu `width`
                     onClick={() => setOpen(false)}
                 >
-                    <div
-                        className={
-                            `rounded-md ring-1 ring-black ring-opacity-5 ` +
-                            contentClasses
-                        }
-                    >
+                    <div className={`rounded-md ring-1 ring-black ring-opacity-5 ` + contentClasses}>
                         {children}
                     </div>
                 </div>
@@ -85,7 +73,6 @@ const Content = ({
         </>
     );
 };
-
 const DropdownLink = ({ className = '', children, ...props }) => {
     return (
         <Link

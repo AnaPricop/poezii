@@ -4,6 +4,7 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import NotificationsDropdown from '@/Components/NotificationsDropdown';
 
 export default function AuthenticatedLayout({ header, children }) {
     const { auth } = usePage().props;
@@ -15,7 +16,6 @@ export default function AuthenticatedLayout({ header, children }) {
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
                         <div className="flex">
-                            {/* Logo */}
                             <div className="flex shrink-0 items-center">
                                 <Link href="/">
                                     <ApplicationLogo className="block h-10 w-auto fill-current text-text-main" />
@@ -38,7 +38,11 @@ export default function AuthenticatedLayout({ header, children }) {
                             </div>
                         </div>
 
+
+
+
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
+                            <NotificationsDropdown />
                             <div className="relative ms-3">
                                 <Dropdown>
                                     <Dropdown.Trigger>

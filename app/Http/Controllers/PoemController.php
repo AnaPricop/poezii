@@ -16,7 +16,7 @@ class PoemController extends Controller
      */
     public function index()
     {
-        $poems = Poem::with('user:id,name')->withCount('likes')->latest()->paginate(15);
+        $poems = Poem::with('user:id,name')->withCount('likes', 'comments')->latest()->paginate(15);
 
         if (Auth::check()) {
             $likedPoemIds = Auth::user()->likes()->pluck('poem_id')->toArray();

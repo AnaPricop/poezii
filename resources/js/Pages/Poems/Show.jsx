@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import GuestLayout from '@/Layouts/GuestLayout';
 import Poem from '@/Components/Poem';
@@ -32,12 +32,11 @@ export default function Show({poem, comments = []}) {
     const {data, setData, post, processing, errors, reset} = useForm({
         body: '',
     });
-
     const submit = (e) => {
         e.preventDefault();
         post(route('poems.comments.store', poem.id), {
             preserveScroll: true,
-            onSuccess: () => reset(),
+            onSuccess: () => {reset();setData('body', '');}
         });
     };
 
@@ -50,10 +49,11 @@ export default function Show({poem, comments = []}) {
                 </div>
 
                 {auth.user && (
-                    <form onSubmit={submit}
+                    <form onSubmit={submit} autoComplete="off"
                           className="mt-8 bg-surface p-6 rounded-lg shadow-sm border border-slate-200">
         <textarea
             value={data.body}
+            autoComplete="new-password"
             onChange={(e) => setData('body', e.target.value)}
             placeholder={`Ce părere ai, ${auth.user.name}?`}
             className="w-full border-slate-300 focus:border-teal-500 focus:ring focus:ring-teal-500/50 rounded-md shadow-sm text-text-main bg-slate-50" // <-- LINIA MODIFICATĂ

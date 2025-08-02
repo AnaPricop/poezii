@@ -1,6 +1,7 @@
 import React from 'react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import { Link, usePage } from '@inertiajs/react';
+import NavLink from "@/Components/NavLink.jsx";
 
 export default function Guest({ children }) {
     // Verificăm dacă rutele de login/register există, pentru a afișa butoanele condiționat
@@ -17,6 +18,14 @@ export default function Guest({ children }) {
                                 <Link href="/">
                                     <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
                                 </Link>
+                            </div>
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink href={route('dashboard')} active={route().current('dashboard')}>
+                                    Acasă
+                                </NavLink>
+                                <NavLink href={route('poems.index')} active={route().current('poems.index')}>
+                                    Poezii
+                                </NavLink>
                             </div>
                         </div>
 

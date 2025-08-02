@@ -15,8 +15,8 @@ class DashboardController extends Controller
     {
         $poemsQuery = Poem::with('user:id,name')->withCount('likes', 'comments');
 
-        $mostLikedPoems = (clone $poemsQuery)->orderByDesc('likes_count')->limit(5)->get();
-        $latestPoems = (clone $poemsQuery)->latest()->limit(5)->get();
+        $mostLikedPoems = (clone $poemsQuery)->orderByDesc('likes_count')->limit(10)->get();
+        $latestPoems = (clone $poemsQuery)->latest()->limit(10)->get();
 
         if (Auth::check()) {
             // Preluăm ID-urile poeziilor la care userul curent a dat like
